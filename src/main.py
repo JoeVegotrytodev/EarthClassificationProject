@@ -45,7 +45,7 @@ def train(model, optimizer, train_dataloader, device):
         # получаем классы по изображениям
         answer_train = pic_to_class(answer_train)
 
-        loss = loss_func()(prediction, answer_train)
+        loss = loss_func(prediction, answer_train)
         # loss =  torch.nn.NLLLoss()(torch.log(y_pred), y_train) - это было NLLL(Log(Softmax))
 
         loss.backward()
@@ -71,7 +71,7 @@ def validate(model, test_dataloader, wandb, mean_val_loss, device):
         print("\nSoftMax по ответу: ")
         print(nn.Softmax()(test_prediction))
 
-        loss = loss()(test_prediction, classes)
+        loss = loss_func(test_prediction, classes)
         loss = loss.to(device)
         mean_val_loss.append(loss.numpy())
 
