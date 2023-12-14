@@ -12,6 +12,7 @@ from src.PictToClass import pic_to_class
 
 loss_func = torch.nn.CrossEntropyLoss()
 NUM_OF_EPOCH = 3
+DEVICE = get_device()
 
 
 def getOptimizer(model, learning_rate=0.01):
@@ -19,18 +20,18 @@ def getOptimizer(model, learning_rate=0.01):
     return torch.optim.SGD(model.parameters(), lr=learning_rate)
 
 
-def train(model, optimizer, train_dataloader):
+def train(model, optimizer, train_dataloader, device):
     """Обучение модели"""
 
     # берем пример и ответ
     for sample_train, answer_train in tqdm(train_dataloader):
         # переносим батчи на девайс
-        sample_train, answer_train = sample_train.to(get_device()), answer_train.to(get_device())
+        sample_train, answer_train = sample_train.to(device), answer_train.to(device)
         print("Размерность батча трейн пример ", sample_train.shape)
         print("Размерность батча трейн ответ  ", answer_train.shape)
 
         # делаем предсказание и переносим его на девайс
-        prediction = model(sample_train).to(get_device())
+        prediction = model(sample_train).to(DEVICE)
         # prediction = prediction.to(get_device())
 
         print("\nответ сетки\n[bs, числа которые станут вероятностями]")
@@ -52,10 +53,10 @@ def train(model, optimizer, train_dataloader):
         optimizer.zero_grad()
 
 
-def validate(model, test_dataloader, wandb, mean_val_loss):
+def validate(model, test_dataloader, wandb, mean_val_loss, device):
 
     for sample_test, answer_test in tqdm(test_dataloader):
-        sample_test, answer_test = sample_test.to(get_device()), answer_test.to(get_device())
+        sample_test, answer_test = sample_test.to(device), answer_test.to(device)
         print("Размерность батча тест пример ", sample_test.shape)
         print("Размерность батча тест ответ  ", answer_test.shape)
 
@@ -71,7 +72,7 @@ def validate(model, test_dataloader, wandb, mean_val_loss):
         print(nn.Softmax()(test_prediction))
 
         loss = loss()(test_prediction, classes)
-        loss = loss.to(get_device())
+        loss = loss.to(device)
         mean_val_loss.append(loss.numpy())
 
         # val_accuracy.extend((torch.argmax(y_pred2, dim=-1) == picToProbsTensor(y_val)).numpy().tolist())
@@ -80,8 +81,7 @@ def validate(model, test_dataloader, wandb, mean_val_loss):
 
 
 if __name__ == '__main__':
-    current_device = get_device()
-    print("device =", current_device, '\n')
+    print("device =", DEVICE, '\n')
 
     trainDataset = dataset("C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/train_label/train_",
                            "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/train_label/train_",
@@ -115,7 +115,7 @@ if __name__ == '__main__':
 
     # создаем модель и переносим на девайс
     earth_model = EarthClastNet()
-    earth_model.to(get_device())
+    earth_model.to(DEVICE)
 
     # задаем оптимайзер
     optimizer = getOptimizer(earth_model)
@@ -124,8 +124,8 @@ if __name__ == '__main__':
     wandb = WandBLog(earth_model)
 
     for epoch in range(NUM_OF_EPOCH):
-        train(earth_model, optimizer, train_dataloader)
+        train(earth_model, optimizer, train_dataloader, DEVICE)
 
         mean_val_loss = []
         with torch.no_grad():
-            validate(earth_model, test_dataloader, wandb.getWandB(), mean_val_loss)
+            validate(earth_model, test_dataloader, wandb.getWandB(), mean_val_loss, DEVICE)
