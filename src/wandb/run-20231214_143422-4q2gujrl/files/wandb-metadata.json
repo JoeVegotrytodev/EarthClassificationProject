@@ -1,0 +1,53 @@
+{
+    "os": "Windows-10-10.0.19045-SP0",
+    "python": "3.11.5",
+    "heartbeatAt": "2023-12-14T11:34:24.830148",
+    "startedAt": "2023-12-14T11:34:22.366576",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "C:\\Users\\Admin\\PycharmProjects\\EarthClassificationProject\\src\\main.py",
+    "codePathLocal": "main.py",
+    "codePath": "src\\main.py",
+    "git": {
+        "remote": "https://github.com/JoeVegotrytodev/EarthClassificationProject.git",
+        "commit": "4994854e9ab9d1e1ebf2a88243d3597546e2f31c"
+    },
+    "email": "joevegojv@gmail.com",
+    "root": "C:/Users/Admin/PycharmProjects/EarthClassificationProject",
+    "host": "DESKTOP-MK11D5O",
+    "username": "Admin",
+    "executable": "C:\\Users\\Admin\\.conda\\envs\\HSEDeepLearningCourse\\python.exe",
+    "cpu_count": 12,
+    "cpu_count_logical": 16,
+    "cpu_freq": {
+        "current": 2500.0,
+        "min": 0.0,
+        "max": 2500.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2500.0,
+            "min": 0.0,
+            "max": 2500.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 475.71844482421875,
+            "used": 200.53158950805664
+        }
+    },
+    "gpu": "NVIDIA GeForce GTX 1650",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce GTX 1650",
+            "memory_total": 4294967296
+        }
+    ],
+    "memory": {
+        "total": 15.711418151855469
+    }
+}
