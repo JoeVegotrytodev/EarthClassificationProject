@@ -27,16 +27,16 @@ def train(model, optimizer, train_dataloader, device):
     for sample_train, answer_train in tqdm(train_dataloader):
         # переносим батчи на девайс
         sample_train, answer_train = sample_train.to(device), answer_train.to(device)
-        print("Размерность батча трейн пример ", sample_train.shape)
-        print("Размерность батча трейн ответ  ", answer_train.shape)
+        # print("Размерность батча трейн пример ", sample_train.shape)
+        # print("Размерность батча трейн ответ  ", answer_train.shape)
 
         # делаем предсказание и переносим его на девайс
         prediction = model(sample_train).to(DEVICE)
         # prediction = prediction.to(get_device())
 
-        print("\nответ сетки\n[bs, числа которые станут вероятностями]")
-        print(prediction.shape)
-        print(prediction)
+        # print("\nответ сетки\n[bs, числа которые станут вероятностями]")
+        # print(prediction.shape)
+        # print(prediction)
         # print("\nответ из выборки")
         # print(y_train.shape)
         # print("\nSoftMax по ответу: ")
@@ -53,31 +53,31 @@ def train(model, optimizer, train_dataloader, device):
         optimizer.zero_grad()
 
 
-def validate(model, test_dataloader, wandb, mean_val_loss, device):
+def validate(model, test_dataloader, wandb, val_loss, val_accuracy, device):
 
     for sample_test, answer_test in tqdm(test_dataloader):
         sample_test, answer_test = sample_test.to(device), answer_test.to(device)
-        print("Размерность батча тест пример ", sample_test.shape)
-        print("Размерность батча тест ответ  ", answer_test.shape)
+        # print("Размерность батча тест пример ", sample_test.shape)
+        # print("Размерность батча тест ответ  ", answer_test.shape)
 
-        print("\nответ из выборки")
+        # print("\nответ из выборки")
         classes = pic_to_class(answer_test)
-        print(classes)
 
         # y_pred2 = earth_model(x_val.permute(0, 3, 1, 2))
         test_prediction = model(sample_test)
-        print("test_prediction shape = ", test_prediction.shape)
-        print("y_pred2 Ответ на выборку = ", test_prediction)
+        # print("test_prediction shape = ", test_prediction.shape)
+        # print("test_prediction Ответ на выборку = ", test_prediction)
         print("\nSoftMax по ответу: ")
         print(nn.Softmax()(test_prediction))
 
         loss = loss_func(test_prediction, classes)
         loss = loss.to(device)
-        mean_val_loss.append(loss.numpy())
+        val_loss.append(loss.numpy())
 
-        # val_accuracy.extend((torch.argmax(y_pred2, dim=-1) == picToProbsTensor(y_val)).numpy().tolist())
-        print("mean_val_loss = ", numpy.mean(mean_val_loss))
-        wandb.log({"mean val loss:": numpy.mean(mean_val_loss)})
+        # val_accuracy.extend((torch.argmax(test_prediction, dim=-1) == pic_to_class(answer_test)).numpy().tolist())
+
+        print("mean_val_loss = ", numpy.mean(val_loss))
+        wandb.log({"mean val loss:": numpy.mean(val_loss)})
 
 
 if __name__ == '__main__':
@@ -126,6 +126,7 @@ if __name__ == '__main__':
     for epoch in range(NUM_OF_EPOCH):
         train(earth_model, optimizer, train_dataloader, DEVICE)
 
-        mean_val_loss = []
+        val_loss = []
+        val_accuracy = []
         with torch.no_grad():
-            validate(earth_model, test_dataloader, wandb.getWandB(), mean_val_loss, DEVICE)
+            validate(earth_model, test_dataloader, wandb.getWandB(), val_loss, val_accuracy, DEVICE)

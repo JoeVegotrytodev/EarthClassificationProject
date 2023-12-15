@@ -33,10 +33,11 @@ class Data_set(torch.utils.data.Dataset):
         index - опеределяет расположение на диске
         Основываясь на индексе, он идентифицируем местоположение изображения на диске,
         преобразует его в тензор с помощью read_image'''
+        index = str(index)
 
         # Основываясь на индексе, он идентифицируем местоположение изображения на диске,
-        sample_path = os.path.join(self.sample_catalog + str(index) + self.file_format)
-        answer_path = os.path.join(self.answer_catalog + str(index) + self.file_format)
+        sample_path = os.path.join(self.sample_catalog + index + self.file_format)
+        answer_path = os.path.join(self.answer_catalog + index + self.file_format)
 
         # преобразуем изобраежение в тензор с помощью read_image,
         sample = read_image(sample_path).to(dtype=torch.float32)
@@ -45,6 +46,7 @@ class Data_set(torch.utils.data.Dataset):
         # Если необходимы преобразования
         # transform = transforms.Compose([
         #   transforms.PILToTensor() ])
+        print("Picture train_", index)
         return sample, answer
 
     def printState(self):
