@@ -9,10 +9,12 @@ from src.dataloaders.TestSampler import TestSampler
 from src.net.EarthClassNet import EarthClastNet
 from src.log.WandBLog import WandBLog
 from src.PictToClass import pic_to_class
+from metrics.accuracy import accuracy_calc
 
 loss_func = torch.nn.CrossEntropyLoss()
-NUM_OF_EPOCH = 3
+NUM_OF_EPOCH = 5
 DEVICE = get_device()
+BATCH_SIZE = 10
 
 
 def getOptimizer(model, learning_rate=0.01):
@@ -60,8 +62,8 @@ def validate(model, test_dataloader, wandb, val_loss, val_accuracy, device):
         # print("Размерность батча тест пример ", sample_test.shape)
         # print("Размерность батча тест ответ  ", answer_test.shape)
 
-        # print("\nответ из выборки")
         classes = pic_to_class(answer_test)
+        # print("\nответ из выборки", classes)
 
         # y_pred2 = earth_model(x_val.permute(0, 3, 1, 2))
         test_prediction = model(sample_test)
@@ -73,12 +75,10 @@ def validate(model, test_dataloader, wandb, val_loss, val_accuracy, device):
         loss = loss_func(test_prediction, classes)
         loss = loss.to(device)
         val_loss.append(loss.numpy())
-
-        # val_accuracy.extend((torch.argmax(test_prediction, dim=-1) == pic_to_class(answer_test)).numpy().tolist())
-
-        print("mean_val_loss = ", numpy.mean(val_loss))
         wandb.log({"mean val loss:": numpy.mean(val_loss)})
 
+        accuracy = accuracy_calc(test_prediction, answer_test, BATCH_SIZE)
+        wandb.log({"mean accuracy:": numpy.mean(accuracy)})
 
 if __name__ == '__main__':
     print("device =", DEVICE, '\n')
@@ -86,12 +86,12 @@ if __name__ == '__main__':
     trainDataset = dataset("C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/train_label/train_",
                            "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/train_label/train_",
                            ".png",
-                           100)
+                           30)
 
     testDataset = dataset("C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/test_label/train_",
                           "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/test_label/train_",
                           ".png",
-                          100)
+                          50)
 
     # trainDataset.printState()
     # testDataset.printState()
@@ -100,8 +100,8 @@ if __name__ == '__main__':
     # testSampler.printState()
 
     # Создаем даталоудеры
-    train_dataloader = torch.utils.data.DataLoader(trainDataset, batch_size=10)
-    test_dataloader = torch.utils.data.DataLoader(testDataset, batch_size=10, sampler=testSampler)
+    train_dataloader = torch.utils.data.DataLoader(trainDataset, batch_size=BATCH_SIZE, shuffle=True)
+    test_dataloader = torch.utils.data.DataLoader(testDataset, batch_size=BATCH_SIZE, sampler=testSampler)
 
     # for batch in train_dataloader:
     #     print(batch[0].size())
