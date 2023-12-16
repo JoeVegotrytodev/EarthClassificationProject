@@ -36,14 +36,6 @@ def train(model, optimizer, train_dataloader, device):
         prediction = model(sample_train).to(DEVICE)
         # prediction = prediction.to(get_device())
 
-        # print("\nответ сетки\n[bs, числа которые станут вероятностями]")
-        # print(prediction.shape)
-        # print(prediction)
-        # print("\nответ из выборки")
-        # print(y_train.shape)
-        # print("\nSoftMax по ответу: ")
-        # print(nn.Softmax()(y_pred))
-
         # получаем классы по изображениям
         answer_train = pic_to_class(answer_train)
 
@@ -56,11 +48,8 @@ def train(model, optimizer, train_dataloader, device):
 
 
 def validate(model, test_dataloader, wandb, val_loss, val_accuracy, device):
-
     for sample_test, answer_test in tqdm(test_dataloader):
         sample_test, answer_test = sample_test.to(device), answer_test.to(device)
-        # print("Размерность батча тест пример ", sample_test.shape)
-        # print("Размерность батча тест ответ  ", answer_test.shape)
 
         classes = pic_to_class(answer_test)
         # print("\nответ из выборки", classes)
@@ -75,10 +64,12 @@ def validate(model, test_dataloader, wandb, val_loss, val_accuracy, device):
         loss = loss_func(test_prediction, classes)
         loss = loss.to(device)
         val_loss.append(loss.numpy())
+        print("loss ", loss)
         wandb.log({"mean val loss:": numpy.mean(val_loss)})
 
         accuracy = accuracy_calc(test_prediction, answer_test, BATCH_SIZE)
         wandb.log({"mean accuracy:": numpy.mean(accuracy)})
+
 
 if __name__ == '__main__':
     print("device =", DEVICE, '\n')
@@ -86,12 +77,12 @@ if __name__ == '__main__':
     trainDataset = dataset("C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/train_label/train_",
                            "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/train_label/train_",
                            ".png",
-                           30)
+                           100)
 
     testDataset = dataset("C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/test_label/train_",
                           "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/test_label/train_",
                           ".png",
-                          50)
+                          30)
 
     # trainDataset.printState()
     # testDataset.printState()
@@ -107,7 +98,6 @@ if __name__ == '__main__':
     #     print(batch[0].size())
     #     print(batch[0])
     #     break
-    #
     # for batch in test_dataloader:
     #     print(batch[0].size())
     #     print(batch[0])

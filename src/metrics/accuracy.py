@@ -6,14 +6,14 @@ def accuracy_calc(test_prediction, answer_test, batch_size):
     position = 0
 
     model_pred_tensor = torch.argmax(test_prediction, dim=-1)
-    print("trch_argmax :")
-    print(model_pred_tensor, "\n")
+    # print("trch_argmax :")
+    # print(model_pred_tensor, "\n")
 
     classes_by_pict = pic_to_class(answer_test).transpose(0, 1)
     # classes_by_pict = classes_by_pict.transpose(0, 1)
     # print("pic_to_class : \n", classes_by_pict, "\n")
     answers_vect = classesToVector(classes_by_pict)
-    print("answers_vect :", answers_vect)
+    # print("answers_vect :", answers_vect)
 
     for index_of_row, pred in enumerate(model_pred_tensor):
         value = pred.item()
@@ -22,7 +22,7 @@ def accuracy_calc(test_prediction, answer_test, batch_size):
             true_answers_counter = true_answers_counter + 1
         position = position + 1
 
-    print("ACC =", true_answers_counter / batch_size)
+    print("accuracy  =", true_answers_counter / batch_size)
     return true_answers_counter / batch_size
 
 def classesToVector(tensor_of_classes):
