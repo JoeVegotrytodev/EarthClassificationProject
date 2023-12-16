@@ -1,6 +1,8 @@
 import torch
 
 from src.PictToClass import pic_to_class
+
+
 def accuracy_calc(test_prediction, answer_test, batch_size):
     true_answers_counter = 0
     position = 0
@@ -24,6 +26,7 @@ def accuracy_calc(test_prediction, answer_test, batch_size):
 
     print("accuracy  =", true_answers_counter / batch_size)
     return true_answers_counter / batch_size
+
 
 def classesToVector(tensor_of_classes):
     vector_of_classes = [0] * 10
