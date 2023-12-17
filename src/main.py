@@ -12,9 +12,21 @@ from src.PictToClass import pic_to_class
 from metrics.accuracy import accuracy_calc
 
 loss_func = torch.nn.CrossEntropyLoss()
-NUM_OF_EPOCH = 5
+NUM_OF_EPOCH = 4
 DEVICE = get_device()
 BATCH_SIZE = 10
+TRAIN_DATASET_SIZE = 635
+TEST_DATASET_SIZE = 100
+
+TRAIN_SAMPLE_PATH_NB = "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/train_label/train_"
+TRAIN_ANSWER_PATH_NB = "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/train_label/train_"
+TEST_SAMPLE_PATH_NB = "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/test_label/train_"
+TEST_ANSWER_PATH_NB = "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/test_label/train_"
+
+TRAIN_SAMPLE_PATH_DT = "S:/AI/Kursov/LEVIR-CD+/train/label/train_"
+TRAIN_ANSWER_PATH_DT = "S:/AI/Kursov/LEVIR-CD+/train/label/train_"
+TEST_SAMPLE_PATH_DT = "S:/AI/Kursov/LEVIR-CD+/test/label/train_"
+TEST_ANSWER_PATH_DT = "S:/AI/Kursov/LEVIR-CD+/test/label/train_"
 
 
 def getOptimizer(model, learning_rate=0.01):
@@ -56,33 +68,34 @@ def validate(model, test_dataloader, wandb, val_loss, val_accuracy, device):
 
         # y_pred2 = earth_model(x_val.permute(0, 3, 1, 2))
         test_prediction = model(sample_test)
-        # print("test_prediction shape = ", test_prediction.shape)
-        # print("test_prediction Ответ на выборку = ", test_prediction)
+        test_prediction = torch.nn.functional.normalize(test_prediction)
         print("\nSoftMax по ответу: ")
         print(nn.Softmax()(test_prediction))
 
         loss = loss_func(test_prediction, classes)
-        loss = loss.to(device)
+        loss = loss.to("cpu")
         val_loss.append(loss.numpy())
         print("loss ", loss)
+        wandb.log({"loss:": loss.numpy()})
         wandb.log({"mean val loss:": numpy.mean(val_loss)})
 
         accuracy = accuracy_calc(test_prediction, answer_test, BATCH_SIZE)
+        wandb.log({"accuracy:": accuracy})
         wandb.log({"mean accuracy:": numpy.mean(accuracy)})
 
 
 if __name__ == '__main__':
     print("device =", DEVICE, '\n')
 
-    trainDataset = dataset("C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/train_label/train_",
-                           "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/train_label/train_",
+    trainDataset = dataset(TRAIN_SAMPLE_PATH_DT,
+                           TRAIN_ANSWER_PATH_DT,
                            ".png",
-                           100)
+                           TRAIN_DATASET_SIZE)
 
-    testDataset = dataset("C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/test_label/train_",
-                          "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/test_label/train_",
+    testDataset = dataset(TEST_SAMPLE_PATH_DT,
+                          TEST_ANSWER_PATH_DT,
                           ".png",
-                          30)
+                          TEST_DATASET_SIZE)
 
     # trainDataset.printState()
     # testDataset.printState()
