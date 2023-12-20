@@ -2,6 +2,7 @@ import torch
 import numpy
 from tqdm import tqdm
 from torch import nn
+import matplotlib.pyplot as plt
 
 from src.datasets.Data_set import Data_set as dataset
 from src.device.Using_device import get_device
@@ -12,11 +13,12 @@ from src.PictToClass import pic_to_class
 from metrics.accuracy import accuracy_calc
 
 loss_func = torch.nn.CrossEntropyLoss()
-NUM_OF_EPOCH = 4
+NUM_OF_EPOCH = 2
 DEVICE = get_device()
 BATCH_SIZE = 10
-TRAIN_DATASET_SIZE = 635
-TEST_DATASET_SIZE = 100
+# TRAIN_DATASET_SIZE = 636
+TRAIN_DATASET_SIZE = 10
+TEST_DATASET_SIZE = 10
 
 TRAIN_SAMPLE_PATH_NB = "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/train_label/train_"
 TRAIN_ANSWER_PATH_NB = "C:/Users/Admin/PycharmProjects/EarthClassificationProject/data/train_label/train_"
@@ -70,7 +72,22 @@ def validate(model, test_dataloader, wandb, val_loss, val_accuracy, device):
         test_prediction = model(sample_test)
         test_prediction = torch.nn.functional.normalize(test_prediction)
         print("\nSoftMax по ответу: ")
-        print(nn.Softmax()(test_prediction))
+        res = nn.Softmax()(test_prediction)
+        print(res)
+
+        # новый код для вывода результата
+        for_print = classes.tolist()
+        res2 = res.tolist()
+        temp = answer_test.to("cpu")
+        counter = 0
+        print("answer_test")
+        for idx, img in enumerate(temp):
+            img = torch.squeeze(img)
+            plt.imshow(img)
+            plt.suptitle(for_print[counter])
+            plt.title(res2[counter])
+            counter = counter + 1
+            plt.show()
 
         loss = loss_func(test_prediction, classes)
         loss = loss.to("cpu")
