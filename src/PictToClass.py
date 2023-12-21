@@ -28,23 +28,15 @@ def pic_to_class(answerTensor):
         # print("Размерность списка = ", numpy.asarray(tensor_as_list).shape)
         # print("Сам список = ", numpy.asarray(tensor_as_list))
 
-        # print("проходим по списку 1, 1024, 1024 ?????")
-        for onePicOfBatch in tensor_as_list:
+        # OnePicOfBatch -> picture
+        for picture in tensor_as_list:
             colorCount = 0
-            # print("Проходим по 1 размерности")
-            # print("onePicOfBatch len = ", len(onePicOfBatch))
-            for rows in onePicOfBatch:
-                # print("Проходим по 2 размерности")
-                # print("rows len = ", rows)
+            for rows in picture:
                 for cols in rows:
-                    # print("Проходим по 3 размерности")
-                    # print("cols len = ", cols)
                     for pixel in cols:
-                        # к - значение пикселя
                         if pixel == 255:
                             colorCount = colorCount + 1
                             # print("colorCount = ", colorCount)
-                    # print("кол-во пикселей после итерации 3 размерности = ", colorCount)
 
             if colorCount > 100000:
                 # print("A lot of buildings more than 100_000 pix")

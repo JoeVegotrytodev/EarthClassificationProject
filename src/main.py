@@ -13,10 +13,10 @@ from src.PictToClass import pic_to_class
 from metrics.accuracy import accuracy_calc
 
 loss_func = torch.nn.CrossEntropyLoss()
-NUM_OF_EPOCH = 2
+NUM_OF_EPOCH = 1
 DEVICE = get_device()
 BATCH_SIZE = 10
-# TRAIN_DATASET_SIZE = 636
+# TRAIN_DATASET_SIZE = 635
 TRAIN_DATASET_SIZE = 10
 TEST_DATASET_SIZE = 10
 
@@ -71,6 +71,7 @@ def validate(model, test_dataloader, wandb, val_loss, val_accuracy, device):
         # y_pred2 = earth_model(x_val.permute(0, 3, 1, 2))
         test_prediction = model(sample_test)
         test_prediction = torch.nn.functional.normalize(test_prediction)
+
         print("\nSoftMax по ответу: ")
         res = nn.Softmax()(test_prediction)
         print(res)
@@ -104,13 +105,13 @@ def validate(model, test_dataloader, wandb, val_loss, val_accuracy, device):
 if __name__ == '__main__':
     print("device =", DEVICE, '\n')
 
-    trainDataset = dataset(TRAIN_SAMPLE_PATH_DT,
-                           TRAIN_ANSWER_PATH_DT,
+    trainDataset = dataset(TRAIN_SAMPLE_PATH_NB,
+                           TRAIN_ANSWER_PATH_NB,
                            ".png",
                            TRAIN_DATASET_SIZE)
 
-    testDataset = dataset(TEST_SAMPLE_PATH_DT,
-                          TEST_ANSWER_PATH_DT,
+    testDataset = dataset(TEST_SAMPLE_PATH_NB,
+                          TEST_ANSWER_PATH_NB,
                           ".png",
                           TEST_DATASET_SIZE)
 
