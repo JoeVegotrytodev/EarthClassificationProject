@@ -1,5 +1,5 @@
 Проект классификации изображений земли - Классификация землепользования
-Датасет Kevir-CD : https://github.com/S2Looking/Dataset
+Датасет Levir-CD : https://github.com/S2Looking/Dataset
 
 Задание:
 Разработайте нейронную сеть с помощью PyTorch, выполнив следующие шаги:
